@@ -5,7 +5,12 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = process.env.PORT || 5000
 
-app.use(cors())
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get('/', (req,res) => {
@@ -23,6 +28,7 @@ const client = new MongoClient(uri, {
 });
 
 const collegeCollections = client.db("yourEntrance").collection("colleges");
+const reviewsCollections = client.db("yourEntrance").collection("reviews")
 
 async function run() {
   try {
@@ -37,6 +43,11 @@ async function run() {
         const query = { _id: new ObjectId(id)}
         const result = await collegeCollections.find(query).toArray()
         res.send(result[0])
+    })
+
+    app.get('/reviews', async (req,res) => {
+      const result = await reviewsCollections.find().toArray()
+      res.send(result)
     })
 
 
